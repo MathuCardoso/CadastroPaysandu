@@ -4,12 +4,9 @@ require_once("Connection.php");
 $conn = Connection::getConnection();
 
 $sql = "SELECT * FROM players";
-//Prepara e executa o comando SQL
 $stmt = $conn->prepare($sql);
 $stmt->execute();
-//Armazena os resultados ($result é uma matriz)
 $result = $stmt->fetchAll();
-
 
 ?>
 
@@ -34,8 +31,11 @@ $result = $stmt->fetchAll();
         <h3>Sejam bem-vindos ao <span id="paysandu">Paysandu!</span></h3>
         <a href="jogador.php" class="voltar">Voltar ao formulário</a>
 
-        <table id="tb">
+        <div class="totalJogadores">
+            <p id="nJogadores"></p>
+        </div>
 
+        <table id="tb">
 
             <tr>
                 <th>ID</th>
@@ -109,21 +109,30 @@ $result = $stmt->fetchAll();
 
 
     <script>
+
+        //tocar audio
         var paysa = document.getElementById('paysandu');
         paysa.onclick = function() {
             document.getElementById('audio').play();
         };
 
+
+        //senha para deletar jogador
         function confirmDelete() {
             var senha = prompt("Insira a senha", "");
-            if(senha === "lobomal"){
+            if (senha === "lobomal") {
+                alert('Exclusão realizada com sucesso');
                 return true
-            }else{
+            } else {
                 alert('senha incorreta.');
                 return false;
             }
-
         }
+
+        //numero de jogadores
+        var nJogadores = document.getElementById("nJogadores");
+        var totalJogadores = <?php echo count($result); ?>;
+        nJogadores.textContent = totalJogadores + " jogadores cadastrados";
     </script>
 
 

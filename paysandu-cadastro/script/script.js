@@ -30,17 +30,15 @@
             var nome_camisa = document.getElementById('nome_camisa').value;
             var posicao = document.querySelector('input[name="posicao"]:checked').value;
             var audio = document.getElementById('audio');
-            var letrasOnly = /^[A-Za-z. úÚÁáçÇêÊâÂèÉ]+$/;
+            var msgErro = document.getElementById('msgErro');
 
-            if (letrasOnly.test(nome && nome_camisa) && idade && n_camisa && posicao) {
+            if (nome && nome_camisa && idade && n_camisa && posicao) {
                 audio.play();
-                alert('Cadastro realizado com sucesso. Bem vindo ao Paysandu, ' + nome + ".");
+                alert('Cadastro realizado com sucesso. Bem vindo(a) ao Paysandu, ' + nome + ".");
                 return true;
-
             } else {
-                alert('Preencha os campos corretamente');
+                msgErro.textContent('Preencha os campos corretamente');
                 return false;
-
             }
 
         }

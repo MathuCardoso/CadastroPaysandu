@@ -6,7 +6,6 @@
     echo $id;
 
     if($id) {
-
         $conn = Connection::getConnection();
         $sql = 'DELETE FROM players WHERE id = ?';
         $stmt = $conn->prepare($sql);

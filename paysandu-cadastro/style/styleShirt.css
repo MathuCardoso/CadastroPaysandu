@@ -15,10 +15,6 @@ body{
     margin: 0;
 }
 
-img{
-    width: 40%;
-}
-
 #nome{
     font-weight: bold;
     position: absolute;
