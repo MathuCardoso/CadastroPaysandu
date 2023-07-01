@@ -4,7 +4,9 @@ require_once("Connection.php");
 
 $conn = Connection::getConnection();
 
-$msgErro = '';
+
+$titulo = 'Cadastre o jogador';
+$msgSucesso = 'Cadastro realizado com sucesso';
 
 $nome = isset($_POST['nome']) ? $_POST['nome'] : null;
 $idade = isset($_POST['idade']) ? $_POST['idade'] : null;
@@ -14,21 +16,53 @@ $nome_camisa = isset($_POST['nome_camisa']) ? $_POST['nome_camisa'] : null;
 
 if (isset($_POST['submetido'])) {
 
-    if ($nome)
+    $sql = "SELECT * FROM players WHERE nome_camisa = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$nome_camisa]);
+    $sameShirtName = $stmt->fetchAll();
 
-    if (!$nome) {
-        $msgErro = '<p id="msgErro">Preencha o(s) campos em branco</p>';
-    } else if (!$idade) {
-        $msgErro = '<p id="msgErro">Preencha o(s) campos em branco</p>';
-    } else if (!$n_camisa) {
-        $msgErro = '<p id="msgErro">Preencha o(s) campos em branco</p>';
-    } else if (!$posicao) {
-        $msgErro = '<p id="msgErro">Preencha o(s) campos em branco</p>';
-    } else if (!$nome_camisa) {
-        $msgErro = '<p id="msgErro">Preencha o(s) campos em branco</p>';
+    $sql = "SELECT * FROM players";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->fetchAll();
+
+    $sql = "SELECT * FROM players WHERE n_camisa = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$n_camisa]);
+    $sameShirtNumber = $stmt->fetchAll();
+
+
+    if (count($result) > 10) {
+        $msgErro = '<p id="msgErro">O limite de jogadores foi atingido</p>';
+        $titulo = $msgErro;
+    } else if (!$nome && !$nome_camisa && !$n_camisa && !$posicao && !$n_camisa) {
+        $msgErro = '<p id="msgErro">Preencha os dados do jogador!</p>';
+        $titulo = $msgErro;
+    } else if (!$nome) {
+        $msgErro = '<p id="msgErro">Qual é o nome do jogador?</p>';
+        $titulo = $msgErro;
+    } elseif (!$nome_camisa) {
+        $msgErro = '<p id="msgErro">Qual será o nome na camisa?</p>';
+        $titulo = $msgErro;
+    } elseif (!$n_camisa) {
+        $msgErro = '<p id="msgErro">Escolha o número da camisa.</p>';
+        $titulo = $msgErro;
+    } elseif (!$idade) {
+        $msgErro = '<p id="msgErro">Qual a idade do jogador?</p>';
+        $titulo = $msgErro;
+    } elseif (!$posicao) {
+        $msgErro = '<p id="msgErro">Qual a posição do jogador?</p>';
+        $titulo = $msgErro;
+    } elseif (count($sameShirtName) > 0) {
+        $msgErro = '<p id="msgErro">Essa camisa já tem dono!</p>';
+        $titulo = $msgErro;
+    } elseif (count($sameShirtNumber) > 0) {
+        $msgErro = '<p id="msgErro">Escolha outro número!</p>';
+        $titulo = $msgErro;
     }
-    
-    else {
+
+    if (empty($msgErro)) {
+        $titulo = $msgSucesso;
         $sql = 'INSERT INTO players(nome, idade, n_camisa, posicao, nome_camisa)' . ' VALUES(?, ?, ?, ?, ?)';
         $stmt = $conn->prepare($sql);
         $stmt->execute([$nome, $idade, $n_camisa, $posicao, $nome_camisa]);
@@ -52,9 +86,6 @@ if (isset($_POST['submetido'])) {
 
 <body>
 
-    <audio src="paysandu.mp3" id="audio"></audio>
-
-
     <div class="container">
 
         <div class="cont1">
@@ -62,15 +93,14 @@ if (isset($_POST['submetido'])) {
         </div>
 
         <div class="form">
+            <div id="msg">
+                <h1 id="titulo"><?php echo $titulo; ?></h1>
+            </div>
+
 
             <form action="" method="POST" onsubmit="return msgSucesso();">
-                <h1>Cadastre o jogador</h1>
 
-                <div id="msg">
-                    <?php
-                    echo $msgErro;
-                    ?>
-                </div>
+
 
                 <div class="linha1">
                     <div class="input">
@@ -82,7 +112,7 @@ if (isset($_POST['submetido'])) {
                     <div class="input">
                         <label for="nome_camisa" class="label">Nome no uniforme</label>
                         <input type="text" name="nome_camisa" id="nome_camisa" placeholder="Insira o nome no uniforme" minlength="3" value="<?php
-                                                                                                                                echo $nome_camisa; ?>">
+                                                                                                                                            echo $nome_camisa; ?>">
                     </div>
                 </div>
 
@@ -119,7 +149,9 @@ if (isset($_POST['submetido'])) {
                     </div>
                 </div>
 
-                <label id="position">Posição</label>
+                <div class="positionLabel">
+                    <label id="position">Posição</label>
+                </div>
                 <div class="linha3">
                     <div class="input-radio">
                         <label for="ataque">Ataque</label>
@@ -167,6 +199,10 @@ if (isset($_POST['submetido'])) {
         <div class="cont2">
             <img src="https://4.bp.blogspot.com/-PlwN9Qaw3q4/Tw-jaiLLILI/AAAAAAAAA7s/pCcXdEygHQM/s320/masc_paysandu.png" id="img-right" alt="">
         </div>
+    </div>
+
+    <div class="tip">
+        <p id="dica">Olhe na tabela se o jogador foi cadastrado com uscesso.</p>
     </div>
 
 

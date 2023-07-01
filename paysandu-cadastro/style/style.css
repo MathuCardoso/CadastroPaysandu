@@ -45,7 +45,7 @@ body{
     cursor: pointer;
 }
 
-form{
+.form{
     border-radius: 15px;
     background-color: rgba(0, 0, 0, 0.834);
     color: white;
@@ -63,11 +63,10 @@ h1{
 #msgErro{
     margin: 10px 0 15px 0;
     font-weight: bold;
-    font-size: 25px;
-    padding: 10px;
-    background-color: rgba(255, 0, 0, 0.281);
+    font-size: 32px;
     border-radius: 10px;
     color: red;
+    border-bottom: 2px solid red;
 }
 
 .bottom{
@@ -100,6 +99,7 @@ h1{
     width: 100%;
     display: flex;
     text-align: left;
+    align-items: center;
 }
 
 .seeT a::after{
@@ -131,6 +131,8 @@ a{
 
 .linha2{
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 25px;
     margin: 20px 0;
 }
@@ -250,4 +252,25 @@ a{
     justify-content: center;
     flex-direction: column;
 }
+
+.positionLabel{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#dica{
+    margin: 0;
+    position: absolute;
+    bottom: 0;
+    color: white;
+}
+
+.tip{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
 
