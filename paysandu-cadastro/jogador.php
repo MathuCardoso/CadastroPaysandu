@@ -6,7 +6,6 @@ $conn = Connection::getConnection();
 
 
 $titulo = 'Cadastre o jogador';
-$msgSucesso = 'Cadastro realizado com sucesso';
 
 $nome = isset($_POST['nome']) ? $_POST['nome'] : null;
 $idade = isset($_POST['idade']) ? $_POST['idade'] : null;
