@@ -4,7 +4,6 @@ require_once("Connection.php");
 
 $conn = Connection::getConnection();
 
-
 $titulo = 'Cadastre o jogador';
 
 $nome = isset($_POST['nome']) ? $_POST['nome'] : null;
@@ -12,6 +11,36 @@ $idade = isset($_POST['idade']) ? $_POST['idade'] : null;
 $n_camisa = isset($_POST['n_camisa']) ? $_POST['n_camisa'] : null;
 $posicao = isset($_POST['posicao']) ? $_POST['posicao'] : null;
 $nome_camisa = isset($_POST['nome_camisa']) ? $_POST['nome_camisa'] : null;
+$cadastro = isset($_GET['cadastro']) ? $_GET['cadastro'] : null;
+
+if ($cadastro === 'failMaximoJogadores') {
+    $msgErro = '<p id="msgErro">O limite de jogadores foi atingido</p>';
+    $titulo = $msgErro;
+} elseif ($cadastro === 'fail') {
+    $msgErro = '<p id="msgErro">Preencha os dados do jogador;</p>';
+    $titulo = $msgErro;
+} else if ($cadastro === 'failNome') {
+    $msgErro = '<p id="msgErro">Qual é o nome do jogador?</p>';
+    $titulo = $msgErro;
+} else if ($cadastro === 'failNomeCamisa') {
+    $msgErro = '<p id="msgErro">Qual será o nome na camisa?</p>';
+    $titulo = $msgErro;
+} else if ($cadastro === 'failNumeroCamisa') {
+    $msgErro = '<p id="msgErro">Escolha o número da camisa.</p>';
+    $titulo = $msgErro;
+} else if ($cadastro === 'failIdade') {
+    $msgErro = '<p id="msgErro">Qual a idade do jogador?</p>';
+    $titulo = $msgErro;
+} else if ($cadastro === 'failPosicao') {
+    $msgErro = '<p id="msgErro">Qual a posição do jogador?</p>';
+    $titulo = $msgErro;
+} else if ($cadastro === 'failSameShirtName') {
+    $msgErro = '<p id="msgErro">Essa camisa já tem dono!</p>';
+    $titulo = $msgErro;
+} else if ($cadastro === 'failSameShirtNumber') {
+    $msgErro = '<p id="msgErro">Escolha outro número!</p>';
+    $titulo = $msgErro;
+}
 
 if (isset($_POST['submetido'])) {
 
@@ -31,43 +60,35 @@ if (isset($_POST['submetido'])) {
     $sameShirtNumber = $stmt->fetchAll();
 
 
-    if (count($result) > 10) {
-        $msgErro = '<p id="msgErro">O limite de jogadores foi atingido</p>';
-        $titulo = $msgErro;
+    if (count($result) > 22) {
+        header('location: jogador.php?cadastro=failMaximoJogadores');
     } else if (!$nome && !$nome_camisa && !$n_camisa && !$posicao && !$n_camisa) {
-        $msgErro = '<p id="msgErro">Preencha os dados do jogador!</p>';
-        $titulo = $msgErro;
+        header('location: jogador.php?cadastro=fail');
     } else if (!$nome) {
-        $msgErro = '<p id="msgErro">Qual é o nome do jogador?</p>';
-        $titulo = $msgErro;
+        header('location: jogador.php?cadastro=failNome');
     } elseif (!$nome_camisa) {
-        $msgErro = '<p id="msgErro">Qual será o nome na camisa?</p>';
-        $titulo = $msgErro;
+        header('location: jogador.php?cadastro=failNomeCamisa');
     } elseif (!$n_camisa) {
-        $msgErro = '<p id="msgErro">Escolha o número da camisa.</p>';
-        $titulo = $msgErro;
+        header('location: jogador.php?cadastro=failNumeroCamisa');
     } elseif (!$idade) {
-        $msgErro = '<p id="msgErro">Qual a idade do jogador?</p>';
-        $titulo = $msgErro;
+        header('location: jogador.php?cadastro=failIdade');
     } elseif (!$posicao) {
-        $msgErro = '<p id="msgErro">Qual a posição do jogador?</p>';
-        $titulo = $msgErro;
+        header('location: jogador.php?cadastro=failPosicao');
     } elseif (count($sameShirtName) > 0) {
-        $msgErro = '<p id="msgErro">Essa camisa já tem dono!</p>';
-        $titulo = $msgErro;
+        header('location: jogador.php?cadastro=failSameShirtName');
     } elseif (count($sameShirtNumber) > 0) {
-        $msgErro = '<p id="msgErro">Escolha outro número!</p>';
-        $titulo = $msgErro;
+        header('location: jogador.php?cadastro=failShirtNumber');
     }
 
     if (empty($msgErro)) {
-        $titulo = $msgSucesso;
         $sql = 'INSERT INTO players(nome, idade, n_camisa, posicao, nome_camisa)' . ' VALUES(?, ?, ?, ?, ?)';
         $stmt = $conn->prepare($sql);
         $stmt->execute([$nome, $idade, $n_camisa, $posicao, $nome_camisa]);
-        header("location: jogador.php");
+        $_GET['cadastro'] = 'success';
+        header("location: jogador.php?cadastro=success");
     }
 }
+
 ?>
 
 
@@ -85,6 +106,13 @@ if (isset($_POST['submetido'])) {
 
 <body>
 
+    <?php
+
+    if (isset($_GET['cadastro']) && $_GET['cadastro'] === 'success') {
+        echo '<audio src="paysandu.mp3" hidden autoplay style="width: 0;"></audio>';
+    }
+
+    ?>
     <div class="container">
 
         <div class="cont1">
@@ -96,8 +124,7 @@ if (isset($_POST['submetido'])) {
                 <h1 id="titulo"><?php echo $titulo; ?></h1>
             </div>
 
-
-            <form action="" method="POST" onsubmit="return msgSucesso();">
+            <form action="" method="POST">
 
 
 
@@ -189,7 +216,7 @@ if (isset($_POST['submetido'])) {
                     </div>
 
                     <div class="clean">
-                        <button type="button" id="limpar">Limpar</button>
+                        <input type="reset" value="Limpar campos" id="limpar">
                     </div>
                 </div>
             </form>
@@ -205,8 +232,6 @@ if (isset($_POST['submetido'])) {
     </div>
 
 
-
-    <script src="script/script.js"></script>
 </body>
 
 </html>
